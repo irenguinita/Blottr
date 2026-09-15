@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Blottr</title>
+    <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
+</head>
+<body>
+    <div class="card home-card">
+        <h1>HOME SCREEN</h1>
+        <p>Welcome, {{ user.username }}!</p>
+        <a href="{% url 'login:logout' %}" class="logout-link">Log out</a>
+    </div>
+    <script src="{% static 'js/home/home.js' %}"></script>
+</body>
+</html>
