@@ -21,7 +21,9 @@
             {% endfor %}
             </ul>
         {% endif %}
-
+        {% for m in messages %}
+            <p style="background:#dcfce7;padding:8px;border-radius:4px;">{{ m }}</p>
+        {% endfor %}
         <form method="post">
             {% csrf_token %}
             <div class="field">

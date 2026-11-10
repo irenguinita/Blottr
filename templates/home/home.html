@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
 </head>
 <body>
+    <nav style="padding:12px;background:#1d4ed8;">
+        <a href="{% url 'home:home' %}" style="color:#fff;margin-right:14px;">Home</a>
+        <a href="{% url 'user_profile:profile' %}" style="color:#fff;margin-right:14px;">Profile</a>
+        <a href="{% url 'user_settings:settings' %}" style="color:#fff;margin-right:14px;">Settings</a>
+        <a href="{% url 'login:logout' %}" style="color:#fff;">Logout</a>
+    </nav>
     <div class="card home-card">
         <h1>HOME SCREEN</h1>
         <p>Welcome, {{ user.username }}!</p>
