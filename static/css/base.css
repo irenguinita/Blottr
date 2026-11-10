@@ -195,3 +195,30 @@ table.data td { padding: 12px; border-bottom: 1px solid var(--border); color: va
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .topbar, .mainnav { padding-left: 16px; padding-right: 16px; }
 }
+
+/* ---------- Incident form and list ---------- */
+.field select,
+.field input[type=datetime-local] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--card);
+  color: var(--text);
+}
+.field select:focus, .field input[type=datetime-local]:focus {
+  outline: none;
+  border-color: var(--navy-2);
+  box-shadow: 0 0 0 3px rgba(19,49,92,.18);
+}
+.err { color: #d33a33; font-size: 13px; margin-top: 4px; }
+.grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+#map { height: 400px; border: 1px solid var(--border); border-radius: 3px; z-index: 0; }
+.coords { font-size: 13px; color: var(--muted); margin-top: 8px; }
+.page-head { display: flex; justify-content: space-between; align-items: flex-start; }
+.badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; background: #fff4d6; color: #8a6a00; }
+.badge-under_investigation { background: #e1ecfb; color: #1b4f9c; }
+.badge-resolved { background: #e6f4ea; color: #1e6b34; }
+@media (max-width: 800px) { .grid-form { grid-template-columns: 1fr; } }
