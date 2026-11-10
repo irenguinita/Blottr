@@ -1,48 +1,27 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | Blottr</title>
-    <link rel="stylesheet" href="{% static 'css/register/register.css' %}">
-</head>
-<body>
-    <div class="card">
-        <h1>REGISTER</h1>
+{% extends "base_auth.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+  <h2>Create Account</h2>
+  <p class="sub">Register to request access to the Blottr portal.</p>
 
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-        {% if messages %}
-            <ul class="messages">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            <div class="field">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <div class="field">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
-            </div>
-            <button type="submit" class="btn">Register</button>
-        </form>
-
-        <p class="helper-text">Already have an account?
-            <a href="{% url 'login:login' %}">Log in here</a>
-        </p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autofocus>
     </div>
-    <script src="{% static 'js/register/register.js' %}"></script>
-</body>
-</html>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <div class="field">
+      <label for="confirm_password">Confirm password</label>
+      <input type="password" id="confirm_password" name="confirm_password" required>
+    </div>
+    <button type="submit" class="btn btn-full">CREATE ACCOUNT</button>
+  </form>
+
+  <div class="alt">Already registered? <a href="{% url 'login:login' %}">Sign in</a></div>
+{% endblock %}

@@ -1,46 +1,23 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Blottr</title>
-    <link rel="stylesheet" href="{% static 'css/login/login.css' %}">
-</head>
-<body>
-    <div class="card">
-        <h1>LOGIN</h1>
+{% extends "base_auth.html" %}
+{% block title %}Sign In{% endblock %}
+{% block content %}
+  <h2>Officer Sign In</h2>
+  <p class="sub">Enter your credentials to access the portal.</p>
 
-        {% if error %}
-            <p class="error">{{ error }}</p>
-        {% endif %}
-        {% if messages %}
-            <ul class="messages">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-        {% for m in messages %}
-            <p style="background:#dcfce7;padding:8px;border-radius:4px;">{{ m }}</p>
-        {% endfor %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="field">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="field">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn">Log In</button>
-        </form>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
 
-        <p class="helper-text">Don't have an account?
-            <a href="{% url 'register:register' %}">Register here</a>
-        </p>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required autofocus>
     </div>
-    <script src="{% static 'js/login/login.js' %}"></script>
-</body>
-</html>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit" class="btn btn-full">SIGN IN</button>
+  </form>
+
+  <div class="alt">No account yet? <a href="/register/">Register here</a></div>
+{% endblock %}
