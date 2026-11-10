@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Log Incident{% endblock %}
+{% block content %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <h1 class="page-title">Incident &amp; Blotter Entry</h1>
+  <p class="page-sub">Record the incident details, then click the map to pin the exact location.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="grid-form">
+
+      <div class="card">
+        <h3>Incident Details</h3>
+
+        <div class="field">
+          <label for="id_category">Category</label>
+          {{ form.category }}
+          {% for e in form.category.errors %}<div class="err">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label for="id_occurrence_timestamp">Date and time of incident</label>
+          {{ form.occurrence_timestamp }}
+          {% for e in form.occurrence_timestamp.errors %}<div class="err">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label for="id_narrative_description">Narrative description</label>
+          {{ form.narrative_description }}
+          {% for e in form.narrative_description.errors %}<div class="err">{{ e }}</div>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label for="id_involved_parties">Involved parties</label>
+          {{ form.involved_parties }}
+        </div>
+
+        <button type="submit" class="btn">SUBMIT INCIDENT REPORT</button>
+      </div>
+
+      <div class="card">
+        <h3>Incident Location</h3>
+        <div id="map"></div>
+        <div class="coords">Pin location: <strong id="coords">not set. Click the map.</strong></div>
+        {{ form.latitude }}
+        {{ form.longitude }}
+        {% for e in form.latitude.errors %}<div class="err">{{ e }}</div>{% endfor %}
+      </div>
+
+    </div>
+  </form>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    var latInput = document.getElementById("id_latitude");
+    var lngInput = document.getElementById("id_longitude");
+    var coordText = document.getElementById("coords");
+
+    // Starts centered on Cebu City
+    var map = L.map("map").setView([10.3157, 123.8854], 13);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    var marker = null;
+    function setPin(lat, lng) {
+      if (marker) { marker.setLatLng([lat, lng]); }
+      else { marker = L.marker([lat, lng]).addTo(map); }
+      latInput.value = lat.toFixed(6);
+      lngInput.value = lng.toFixed(6);
+      coordText.textContent = lat.toFixed(6) + ", " + lng.toFixed(6);
+    }
+
+    map.on("click", function (e) { setPin(e.latlng.lat, e.latlng.lng); });
+
+    // If the form came back with errors, put the pin back
+    if (latInput.value && lngInput.value) {
+      var la = parseFloat(latInput.value), ln = parseFloat(lngInput.value);
+      setPin(la, ln);
+      map.setView([la, ln], 15);
+    }
+  </script>
+{% endblock %}

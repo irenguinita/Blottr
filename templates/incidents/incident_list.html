@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Incident Log{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Incident Log</h1>
+      <p class="page-sub">Most recent recorded incidents.</p>
+    </div>
+    <a href="{% url 'incidents:create' %}" class="btn">+ LOG NEW INCIDENT</a>
+  </div>
+
+  <div class="card">
+    <table class="data">
+      <thead>
+        <tr><th>Date / Time</th><th>Category</th><th>Location</th><th>Reported by</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+          <tr>
+            <td>{{ r.occurrence_timestamp|date:"M j, Y g:i A" }}</td>
+            <td>{{ r.category }}</td>
+            <td>{{ r.latitude|floatformat:5 }}, {{ r.longitude|floatformat:5 }}</td>
+            <td>{{ r.user.username|default:"-" }}</td>
+            <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5">No incidents recorded yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}

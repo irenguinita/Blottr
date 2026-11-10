@@ -28,6 +28,7 @@
     <a href="{% url 'user_profile:profile' %}" class="{% if request.resolver_match.app_name == 'user_profile' %}active{% endif %}">My Profile</a>
     <a href="{% url 'user_settings:settings' %}" class="{% if request.resolver_match.app_name == 'user_settings' %}active{% endif %}">Settings</a>
     <a href="{% url 'login:logout' %}" class="logout">Log out</a>
+    <a href="{% url 'incidents:list' %}" class="{% if request.resolver_match.app_name == 'incidents' %}active{% endif %}">Incident Log</a>
   </nav>
 
   <main class="container">
