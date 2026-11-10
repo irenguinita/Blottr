@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blottr | Profile</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; }
+    .card { max-width: 480px; margin: 40px auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+    label { display: block; margin-top: 14px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+    button { margin-top: 18px; padding: 10px 18px; background: #1d4ed8; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+    .ok { background: #dcfce7; padding: 8px; border-radius: 4px; }
+    nav a { margin-right: 12px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <nav>
+      <a href="{% url 'home:home' %}">Home</a>
+      <a href="{% url 'user_settings:settings' %}">Settings</a>
+      <a href="{% url 'login:logout' %}">Logout</a>
+    </nav>
+    <h2>My Profile</h2>
+    {% for m in messages %}<p class="ok">{{ m }}</p>{% endfor %}
+    <p>Username: <strong>{{ request.user.username }}</strong></p>
+    <form method="post">
+      {% csrf_token %}
+      <label>Full name</label>
+      <input type="text" name="full_name" value="{{ profile.full_name }}">
+      <label>Bio</label>
+      <textarea name="bio" rows="4">{{ profile.bio }}</textarea>
+      <button type="submit">Save changes</button>
+    </form>
+  </div>
+</body>
+</html>
