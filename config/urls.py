@@ -12,4 +12,5 @@ urlpatterns = [
     path("", include("apps.home.urls")),   # Home is the root/landing feature
     path("profile/", include("apps.user_profile.urls")),
     path("settings/", include("apps.user_settings.urls")),
+    path("incidents/", include("apps.incidents.urls")),
 ]
