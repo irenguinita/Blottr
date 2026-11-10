@@ -1,63 +1,97 @@
-# Blottr — Vertical Slicing Structure
-(per CSIT327 Django Vertical Slicing + Supabase guide)
+# Blottr: Spatial Incident Management System
 
-## Structure
+Blottr is a web-based incident blotter platform for police stations and barangay offices. Officers log incidents, pin each one on an interactive map, and review crime patterns through a dashboard and a hotspot map. Built with Django and Supabase PostgreSQL for CSIT327 (Information Management 2).
+
+## Features
+
+| Feature | Route | Status |
+|---|---|---|
+| Register | `/register/` | Done |
+| Login / Logout | `/login/`, `/login/logout/` | Done |
+| Dashboard with live incident counts | `/` | Done |
+| User profile (name, bio) | `/profile/` | Done |
+| User settings (dark mode, email notifications) | `/settings/` | Done |
+| Incident entry form with map pin picker | `/incidents/new/` | Done |
+| Incident log | `/incidents/` | Done |
+| Hotspot map with category filter and heat layer | `/incidents/map/` | Done |
+| Visual evidence vault (file uploads) | n/a | Planned |
+| District summary report generator | n/a | Planned |
+
+## Tech Stack
+
+- **Backend:** Python, Django
+- **Database:** Supabase (PostgreSQL), connected through environment variables
+- **Maps:** Leaflet.js with OpenStreetMap tiles and Leaflet.heat
+- **Frontend:** Django templates with one shared stylesheet
+
+## Project Structure
+
+Each feature is its own app (vertical slicing), per the CSIT327 guide.
 
 ```
-blottr_vertical/
+Blottr/
 ├── manage.py
-├── config/                    <- project settings (was "blottr_prelim" before)
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│   └── asgi.py
-├── apps/                      <- all feature apps live inside this package
-│   ├── login/
-│   │   ├── migrations/
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py
-│   │   ├── urls.py
-│   │   └── views.py
-│   ├── register/
-│   │   └── ... (same shape)
-│   └── home/
-│       └── ... (same shape)
-├── templates/                 <- project-level, but each feature owns its subfolder
-│   ├── login/login.html
-│   ├── register/register.html
-│   └── home/home.html
-└── static/                    <- project-level, each feature owns its subfolder
-    ├── css/{login,register,home}/
-    ├── js/{login,register,home}/
-    └── images/{login,register,home}/
+├── requirements.txt
+├── config/                 <- project settings and root URLs
+├── apps/
+│   ├── login/              <- authentication
+│   ├── register/           <- account creation
+│   ├── home/               <- dashboard
+│   ├── user_profile/       <- Profile model and page
+│   ├── user_settings/      <- UserSettings model and page
+│   └── incidents/          <- IncidentCategory, IncidentReport, form, log, map
+├── templates/
+│   ├── base.html           <- shared layout for logged-in pages
+│   ├── base_auth.html      <- shared layout for login and register
+│   └── <feature>/          <- one subfolder per feature
+└── static/css/base.css     <- shared stylesheet
 ```
 
-## How to run
+## Database Models
 
-```
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
+- `IncidentCategory`: incident type (Theft, Assault, and so on)
+- `IncidentReport`: category, occurrence timestamp, narrative, involved parties, latitude, longitude, status, reporting user
+- `Profile`: one per user, with full name and bio
+- `UserSettings`: one per user, with dark mode and email notification flags
+- Django's built-in `User` covers the ERD's USERS table
 
-Routes:
-- `/login/` — Login screen (also handles `/login/logout/`)
-- `/register/` — Register screen
-- `/` — Home screen (root path, requires login)
+Incident locations are stored as `latitude` and `longitude` number fields. The ERD specifies a PostGIS point, but plain coordinates avoid the GDAL dependency, so the map works on any machine.
 
-## What changed from the previous (non-sliced) version
-- Apps moved from the project root into an `apps/` package (`apps.login`,
-  `apps.register`, `apps.home` in `INSTALLED_APPS`)
-- Settings package renamed `blottr_prelim` → `config`
-- CSS/JS split per feature (`static/css/login/login.css`, etc.) instead of
-  one shared stylesheet — this is intentional per the vertical slicing
-  rule that each feature owns its own presentation assets
-- Login moved from `/` to `/login/`; Home is now the root feature (`/`)
-- Templates stay in a shared `templates/` directory, but strictly one
-  subfolder per feature — same layout, no cross-feature files
+## Setup
 
-## Next steps per the guide
-- Add `profile` and `user_settings` as additional feature apps (Activity 2)
-- Connect to Supabase PostgreSQL via `.env` + `dj-database-url`
-- Run `makemigrations` / `migrate` against Supabase, verify in Table Editor
+1. Clone the repository and open the project folder.
+2. Create and activate a virtual environment:
+   ```
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+4. Create a `.env` file in the project root with your Supabase connection details (never commit this file):
+   ```
+   DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres
+   ```
+5. Apply migrations and start the server:
+   ```
+   python manage.py migrate
+   python manage.py runserver
+   ```
+6. Open `http://127.0.0.1:8000/register/`, create an account, and log in.
+
+The incident category list fills itself the first time you open the incident form.
+
+## Design Decisions
+
+- **Shared stylesheet:** the original guide splits CSS per feature. Blottr uses one `base.css` and two base templates so every screen has the same header, navigation, and footer.
+- **Dark mode:** the setting on the Settings page is stored per user and restyles the whole portal.
+- **Coordinates instead of PostGIS:** see Database Models above.
+
+## Limitations
+
+Built for academic demonstration. It has no SMS or email alerts, no integration with national law enforcement databases, and no automatic address geocoding.
+
+## Author
+
+Iren Nathaleigh L. Guinita, CSIT327 F2
