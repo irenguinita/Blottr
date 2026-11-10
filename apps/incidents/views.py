@@ -39,3 +39,18 @@ def incident_create(request):
 def incident_list(request):
     reports = IncidentReport.objects.select_related("category", "user")[:50]
     return render(request, "incidents/incident_list.html", {"reports": reports})
+
+@login_required(login_url="login:login")
+def incident_map(request):
+    reports = IncidentReport.objects.select_related("category")
+    points = [
+        {
+            "lat": r.latitude,
+            "lng": r.longitude,
+            "cat": r.category.category_name,
+            "when": r.occurrence_timestamp.strftime("%b %d, %Y %I:%M %p"),
+        }
+        for r in reports
+    ]
+    categories = IncidentCategory.objects.all()
+    return render(request, "incidents/incident_map.html", {"points": points, "categories": categories})

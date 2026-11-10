@@ -28,7 +28,8 @@
     <a href="{% url 'user_profile:profile' %}" class="{% if request.resolver_match.app_name == 'user_profile' %}active{% endif %}">My Profile</a>
     <a href="{% url 'user_settings:settings' %}" class="{% if request.resolver_match.app_name == 'user_settings' %}active{% endif %}">Settings</a>
     <a href="{% url 'login:logout' %}" class="logout">Log out</a>
-    <a href="{% url 'incidents:list' %}" class="{% if request.resolver_match.app_name == 'incidents' %}active{% endif %}">Incident Log</a>
+    <a href="{% url 'incidents:list' %}" class="{% if request.resolver_match.url_name == 'list' %}active{% endif %}">Incident Log</a>
+    <a href="{% url 'incidents:map' %}" class="{% if request.resolver_match.url_name == 'map' %}active{% endif %}">Hotspot Map</a>
   </nav>
 
   <main class="container">

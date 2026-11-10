@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Hotspot Map{% endblock %}
+{% block content %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Hotspot &amp; Heatmap Viewer</h1>
+      <p class="page-sub">Incident density and locations. Filter by category.</p>
+    </div>
+    <div class="field" style="min-width:220px;">
+      <label for="catFilter">Category</label>
+      <select id="catFilter">
+        <option value="">All categories</option>
+        {% for c in categories %}<option value="{{ c.category_name }}">{{ c.category_name }}</option>{% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="map" style="height:520px;"></div>
+    <div class="coords">Showing <strong id="count">0</strong> incident(s). Red glow = higher density.</div>
+  </div>
+
+  {{ points|json_script:"points-data" }}
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  <script>
+    var points = JSON.parse(document.getElementById("points-data").textContent);
+    var map = L.map("map").setView([10.3157, 123.8854], 12);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    var markers = L.layerGroup().addTo(map);
+    var heat = null;
+
+    function draw(cat) {
+      markers.clearLayers();
+      if (heat) { map.removeLayer(heat); }
+      var shown = points.filter(function (p) { return !cat || p.cat === cat; });
+      shown.forEach(function (p) {
+        L.marker([p.lat, p.lng]).addTo(markers)
+          .bindPopup("<strong>" + p.cat + "</strong><br>" + p.when);
+      });
+      if (window.L && L.heatLayer && shown.length) {
+        heat = L.heatLayer(shown.map(function (p) { return [p.lat, p.lng, 1]; }),
+                           { radius: 35, blur: 25 }).addTo(map);
+      }
+      document.getElementById("count").textContent = shown.length;
+      if (shown.length) {
+        map.fitBounds(shown.map(function (p) { return [p.lat, p.lng]; }), { maxZoom: 15, padding: [40, 40] });
+      }
+    }
+
+    document.getElementById("catFilter").addEventListener("change", function () { draw(this.value); });
+    draw("");
+  </script>
+{% endblock %}
