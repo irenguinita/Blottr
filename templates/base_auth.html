@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Welcome{% endblock %} | Blottr</title>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body>
+  <div class="auth">
+    <section class="auth-side">
+      <svg viewBox="0 0 24 24" width="70" height="70" fill="none" stroke="#c9a227" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5l8-3z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      <h1>BLOTTR</h1>
+      <div class="tag">Spatial Incident Management System</div>
+      <p>A centralized, map-based blotter platform for police stations and barangay offices.</p>
+      <ul>
+        <li>Digital incident registration</li>
+        <li>Geographic incident mapping</li>
+        <li>Evidence and report management</li>
+      </ul>
+    </section>
+
+    <section class="auth-main">
+      <div class="auth-box">
+        {% for m in messages %}
+          <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+        <div class="auth-note">Authorized personnel only. Academic demonstration system.</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

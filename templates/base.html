@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Dashboard{% endblock %} | Blottr</title>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+</head>
+<body class="{% if request.user.usersettings.dark_mode %}dark{% endif %}">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#c9a227" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5l8-3z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      <div>
+        <strong>BLOTTR</strong>
+        <span>Spatial Incident Management System</span>
+      </div>
+    </div>
+    <div class="userbox">Signed in as <strong>{{ request.user.username }}</strong></div>
+  </header>
+
+  <nav class="mainnav">
+    <a href="{% url 'home:home' %}" class="{% if request.resolver_match.app_name == 'home' %}active{% endif %}">Dashboard</a>
+    <a href="{% url 'user_profile:profile' %}" class="{% if request.resolver_match.app_name == 'user_profile' %}active{% endif %}">My Profile</a>
+    <a href="{% url 'user_settings:settings' %}" class="{% if request.resolver_match.app_name == 'user_settings' %}active{% endif %}">Settings</a>
+    <a href="{% url 'login:logout' %}" class="logout">Log out</a>
+  </nav>
+
+  <main class="container">
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags }}">{{ m }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    Blottr &middot; Spatial Incident Management System &middot; For academic demonstration only
+  </footer>
+</body>
+</html>
