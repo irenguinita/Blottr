@@ -222,3 +222,6 @@ table.data td { padding: 12px; border-bottom: 1px solid var(--border); color: va
 .badge-under_investigation { background: #e1ecfb; color: #1b4f9c; }
 .badge-resolved { background: #e6f4ea; color: #1e6b34; }
 @media (max-width: 800px) { .grid-form { grid-template-columns: 1fr; } }
+
+.btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); margin-left: 8px; }
+.btn-secondary:hover { background: var(--bg); }
