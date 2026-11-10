@@ -7,23 +7,23 @@
   <div class="grid-4">
     <div class="card stat">
       <div class="label">Incidents Today</div>
-      <div class="value">&mdash;</div>
-      <div class="note">Awaiting incident module</div>
+      <div class="value">{{ today_count }}</div>
+      <div class="note">Occurred today</div>
     </div>
     <div class="card stat">
       <div class="label">Open Cases</div>
-      <div class="value">&mdash;</div>
-      <div class="note">Awaiting incident module</div>
+      <div class="value">{{ open_count }}</div>
+      <div class="note">Awaiting action</div>
     </div>
     <div class="card stat">
-      <div class="label">Active Alert Level</div>
-      <div class="value">&mdash;</div>
-      <div class="note">Awaiting heatmap module</div>
+      <div class="label">Under Investigation</div>
+      <div class="value">{{ investigating_count }}</div>
+      <div class="note">Active cases</div>
     </div>
     <div class="card stat">
-      <div class="label">Reports Generated</div>
-      <div class="value">&mdash;</div>
-      <div class="note">Awaiting report module</div>
+      <div class="label">Total Recorded</div>
+      <div class="value">{{ total_count }}</div>
+      <div class="note">All time</div>
     </div>
   </div>
 
@@ -51,8 +51,17 @@
       <thead>
         <tr><th>Date / Time</th><th>Category</th><th>Barangay</th><th>Status</th></tr>
       </thead>
-      <tbody>
-        <tr><td colspan="4">No incidents recorded yet.</td></tr>
+            <tbody>
+        {% for r in recent %}
+          <tr>
+            <td>{{ r.occurrence_timestamp|date:"M j, Y g:i A" }}</td>
+            <td>{{ r.category }}</td>
+            <td>{{ r.latitude|floatformat:4 }}, {{ r.longitude|floatformat:4 }}</td>
+            <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="4">No incidents recorded yet.</td></tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
