@@ -1,24 +1,59 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home | Blottr</title>
-    <link rel="stylesheet" href="{% static 'css/home/home.css' %}">
-</head>
-<body>
-    <nav style="padding:12px;background:#1d4ed8;">
-        <a href="{% url 'home:home' %}" style="color:#fff;margin-right:14px;">Home</a>
-        <a href="{% url 'user_profile:profile' %}" style="color:#fff;margin-right:14px;">Profile</a>
-        <a href="{% url 'user_settings:settings' %}" style="color:#fff;margin-right:14px;">Settings</a>
-        <a href="{% url 'login:logout' %}" style="color:#fff;">Logout</a>
-    </nav>
-    <div class="card home-card">
-        <h1>HOME SCREEN</h1>
-        <p>Welcome, {{ user.username }}!</p>
-        <a href="{% url 'login:logout' %}" class="logout-link">Log out</a>
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+  <h1 class="page-title">Command Dashboard</h1>
+  <p class="page-sub">Welcome back, {{ request.user.username }}. Here is the current operational overview.</p>
+
+  <div class="grid-4">
+    <div class="card stat">
+      <div class="label">Incidents Today</div>
+      <div class="value">&mdash;</div>
+      <div class="note">Awaiting incident module</div>
     </div>
-    <script src="{% static 'js/home/home.js' %}"></script>
-</body>
-</html>
+    <div class="card stat">
+      <div class="label">Open Cases</div>
+      <div class="value">&mdash;</div>
+      <div class="note">Awaiting incident module</div>
+    </div>
+    <div class="card stat">
+      <div class="label">Active Alert Level</div>
+      <div class="value">&mdash;</div>
+      <div class="note">Awaiting heatmap module</div>
+    </div>
+    <div class="card stat">
+      <div class="label">Reports Generated</div>
+      <div class="value">&mdash;</div>
+      <div class="note">Awaiting report module</div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <h3>Log New Incident</h3>
+      <p class="meta">Record an incident with its category, narrative and map location.</p>
+      <span class="btn btn-disabled">Coming soon</span>
+    </div>
+    <div class="card">
+      <h3>Hotspot Map</h3>
+      <p class="meta">View incident density and category clusters across local zones.</p>
+      <span class="btn btn-disabled">Coming soon</span>
+    </div>
+    <div class="card">
+      <h3>District Report</h3>
+      <p class="meta">Generate a printable summary for a selected date range.</p>
+      <span class="btn btn-disabled">Coming soon</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Recent Incident Log</h3>
+    <table class="data">
+      <thead>
+        <tr><th>Date / Time</th><th>Category</th><th>Barangay</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="4">No incidents recorded yet.</td></tr>
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
