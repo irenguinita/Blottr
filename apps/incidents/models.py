@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.conf import settings
 
 
 class IncidentCategory(models.Model):
@@ -69,3 +70,31 @@ class IncidentReport(models.Model):
 
     def __str__(self):
         return f"{self.category} - {self.occurrence_timestamp:%Y-%m-%d %H:%M}"
+
+class EvidenceFile(models.Model):
+    IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".gif", ".webp")
+
+    report = models.ForeignKey(
+        IncidentReport,
+        on_delete=models.CASCADE,
+        related_name="evidence_files",
+    )
+    file = models.FileField(upload_to="evidence/%Y/%m/")
+    original_name = models.CharField(max_length=255, blank=True)
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-uploaded_at"]
+
+    def __str__(self):
+        return self.original_name or self.file.name
+
+    @property
+    def is_image(self):
+        return self.file.name.lower().endswith(self.IMAGE_EXTENSIONS)
