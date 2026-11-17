@@ -37,8 +37,9 @@ def incident_create(request):
 
 @login_required(login_url="login:login")
 def incident_list(request):
-    reports = IncidentReport.objects.select_related("category", "user")[:50]
+    reports = IncidentReport.objects.select_related("category", "barangay", "user")[:50]
     return render(request, "incidents/incident_list.html", {"reports": reports})
+
 
 @login_required(login_url="login:login")
 def incident_map(request):
@@ -53,4 +54,8 @@ def incident_map(request):
         for r in reports
     ]
     categories = IncidentCategory.objects.all()
-    return render(request, "incidents/incident_map.html", {"points": points, "categories": categories})
+    return render(
+        request,
+        "incidents/incident_map.html",
+        {"points": points, "categories": categories},
+    )

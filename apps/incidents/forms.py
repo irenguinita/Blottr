@@ -20,6 +20,7 @@ class IncidentReportForm(forms.ModelForm):
             "involved_parties",
             "latitude",
             "longitude",
+            "barangay",
         ]
         labels = {
             "narrative_description": "Narrative description",
@@ -35,3 +36,8 @@ class IncidentReportForm(forms.ModelForm):
             "latitude": {"required": "Click the map to drop a pin on the incident location."},
             "longitude": {"required": "Click the map to drop a pin on the incident location."},
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["barangay"].required = True
+        self.fields["barangay"].empty_label = "Select barangay"

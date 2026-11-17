@@ -19,6 +19,14 @@
           {% for e in form.category.errors %}<div class="err">{{ e }}</div>{% endfor %}
         </div>
 
+        <div class="form-group">
+          <label for="{{ form.barangay.id_for_label }}">Barangay</label>
+          {{ form.barangay }}
+          {% for error in form.barangay.errors %}
+            <p class="error">{{ error }}</p>
+          {% endfor %}
+        </div>
+        
         <div class="field">
           <label for="id_occurrence_timestamp">Date and time of incident</label>
           {{ form.occurrence_timestamp }}
