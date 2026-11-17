@@ -225,3 +225,24 @@ table.data td { padding: 12px; border-bottom: 1px solid var(--border); color: va
 
 .btn-secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); margin-left: 8px; }
 .btn-secondary:hover { background: var(--bg); }
+
+/* ---------- Reports ---------- */
+.field input[type=date] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--card);
+  color: var(--text);
+}
+
+@media print {
+  .topbar, .mainnav, .footer, .no-print { display: none !important; }
+  body, body.dark { background: #fff; color: #000; }
+  .container { margin: 0; max-width: none; padding: 0; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+  table.data th { background: #eee !important; color: #000 !important; }
+  table.data td { color: #000; }
+}

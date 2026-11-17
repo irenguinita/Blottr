@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head no-print">
+  <div>
+    <h1 class="page-title">District Summary Report</h1>
+    <p class="page-sub">Choose a date range to generate a printable incident summary.</p>
+  </div>
+</div>
+
+<div class="card no-print" style="margin-bottom: 22px;">
+  <form method="get">
+    <div class="grid-3" style="margin-bottom: 0;">
+      <div class="field">
+        <label for="{{ form.date_from.id_for_label }}">From</label>
+        {{ form.date_from }}
+        {% for e in form.date_from.errors %}<div class="err">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="{{ form.date_to.id_for_label }}">To</label>
+        {{ form.date_to }}
+        {% for e in form.date_to.errors %}<div class="err">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="{{ form.barangay.id_for_label }}">Barangay</label>
+        {{ form.barangay }}
+      </div>
+    </div>
+    {% for e in form.non_field_errors %}<div class="err">{{ e }}</div>{% endfor %}
+    <button type="submit" class="btn">Generate report</button>
+    {% if generated %}
+      <button type="button" class="btn btn-secondary" onclick="window.print()">Print / Save as PDF</button>
+    {% endif %}
+  </form>
+</div>
+
+{% if generated %}
+<div class="card report">
+  <h2 style="margin: 0 0 4px;">Blottr Incident Summary Report</h2>
+  <p class="meta">
+    Period: {{ start|date:"M d, Y" }} to {{ end|date:"M d, Y" }}
+    · Area: {% if barangay %}{{ barangay }}{% else %}All barangays{% endif %}<br>
+    Generated {{ generated_at|date:"M d, Y h:i A" }} by {{ request.user.username }}
+  </p>
+
+  <div class="grid-3" style="margin-top: 18px;">
+    <div class="card stat">
+      <div class="label">Total incidents</div>
+      <div class="value">{{ total }}</div>
+    </div>
+    <div class="card stat">
+      <div class="label">Most common category</div>
+      <div class="value" style="font-size: 20px;">
+        {% if top_category %}{{ top_category.category__category_name }}{% else %}—{% endif %}
+      </div>
+      <div class="note">{% if top_category %}{{ top_category.total }} reports{% endif %}</div>
+    </div>
+    <div class="card stat">
+      <div class="label">Busiest barangay</div>
+      <div class="value" style="font-size: 20px;">
+        {% if top_barangay %}{{ top_barangay.barangay__name|default:"Unassigned" }}{% else %}—{% endif %}
+      </div>
+      <div class="note">{% if top_barangay %}{{ top_barangay.total }} reports{% endif %}</div>
+    </div>
+  </div>
+
+  <div class="grid-form">
+    <div>
+      <h3>By category</h3>
+      <table class="data">
+        <thead><tr><th>Category</th><th>Incidents</th></tr></thead>
+        <tbody>
+          {% for row in by_category %}
+          <tr><td>{{ row.category__category_name }}</td><td>{{ row.total }}</td></tr>
+          {% empty %}
+          <tr><td colspan="2">No incidents in this period.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>By barangay</h3>
+      <table class="data">
+        <thead><tr><th>Barangay</th><th>Incidents</th></tr></thead>
+        <tbody>
+          {% for row in by_barangay %}
+          <tr><td>{{ row.barangay__name|default:"Unassigned" }}</td><td>{{ row.total }}</td></tr>
+          {% empty %}
+          <tr><td colspan="2">No incidents in this period.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 24px;">Incident log</h3>
+  <table class="data">
+    <thead>
+      <tr><th>#</th><th>When</th><th>Category</th><th>Barangay</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for r in incidents %}
+      <tr>
+        <td>{{ r.pk }}</td>
+        <td>{{ r.occurrence_timestamp|date:"M d, Y h:i A" }}</td>
+        <td>{{ r.category.category_name }}</td>
+        <td>{{ r.barangay.name|default:"—" }}</td>
+        <td>{{ r.status }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">No incidents in this period.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from .models import IncidentReport
+from .models import IncidentReport, Barangay
 
 
 class IncidentReportForm(forms.ModelForm):
@@ -77,3 +77,24 @@ class EvidenceUploadForm(forms.Form):
                     f"'{f.name}' is larger than {self.MAX_SIZE_MB} MB."
                 )
         return files
+
+class ReportFilterForm(forms.Form):
+    date_from = forms.DateField(
+        label="From", widget=forms.DateInput(attrs={"type": "date"})
+    )
+    date_to = forms.DateField(
+        label="To", widget=forms.DateInput(attrs={"type": "date"})
+    )
+    barangay = forms.ModelChoiceField(
+        queryset=Barangay.objects.all(),
+        required=False,
+        empty_label="All barangays",
+        label="Barangay",
+    )
+
+    def clean(self):
+        cleaned = super().clean()
+        start, end = cleaned.get("date_from"), cleaned.get("date_to")
+        if start and end and start > end:
+            raise forms.ValidationError("'From' date must be on or before 'To' date.")
+        return cleaned
