@@ -41,3 +41,39 @@ class IncidentReportForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["barangay"].required = True
         self.fields["barangay"].empty_label = "Select barangay"
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            return [single_clean(d, initial) for d in data]
+        return [single_clean(data, initial)]
+
+
+class EvidenceUploadForm(forms.Form):
+    ALLOWED_EXTENSIONS = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".pdf", ".doc", ".docx")
+    MAX_SIZE_MB = 10
+
+    files = MultipleFileField(label="Evidence files")
+
+    def clean_files(self):
+        files = self.cleaned_data["files"]
+        for f in files:
+            if not f.name.lower().endswith(self.ALLOWED_EXTENSIONS):
+                raise forms.ValidationError(
+                    f"'{f.name}' is not an allowed file type "
+                    "(images, PDF, or Word documents only)."
+                )
+            if f.size > self.MAX_SIZE_MB * 1024 * 1024:
+                raise forms.ValidationError(
+                    f"'{f.name}' is larger than {self.MAX_SIZE_MB} MB."
+                )
+        return files

@@ -12,7 +12,7 @@
   <div class="card">
     <table class="data">
       <thead>
-        <tr><th>Date / Time</th><th>Category</th><th>Location</th><th>Reported by</th><th>Status</th></tr>
+        <tr><th>Date / Time</th><th>Category</th><th>Location</th><th>Reported by</th><th>Evidence</th><th>Status</th></tr>
       </thead>
       <tbody>
         {% for r in reports %}
@@ -21,6 +21,7 @@
             <td>{{ r.category }}</td>
             <td>{{ r.latitude|floatformat:5 }}, {{ r.longitude|floatformat:5 }}</td>
             <td>{{ r.user.username|default:"-" }}</td>
+            <td><a href="{% url 'incidents:evidence' r.pk %}">{{ r.evidence_files.count }} file(s)</a></td>
             <td><span class="badge badge-{{ r.status }}">{{ r.get_status_display }}</span></td>
           </tr>
         {% empty %}

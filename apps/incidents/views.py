@@ -1,9 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import IncidentReportForm
-from .models import IncidentCategory, IncidentReport
+from .forms import EvidenceUploadForm, IncidentReportForm
+from .models import EvidenceFile, IncidentCategory, IncidentReport
 
 DEFAULT_CATEGORIES = [
     "Theft", "Robbery", "Assault", "Vandalism", "Traffic Accident",
@@ -58,4 +58,30 @@ def incident_map(request):
         request,
         "incidents/incident_map.html",
         {"points": points, "categories": categories},
+    )
+
+@login_required(login_url="login:login")
+def evidence_vault(request, pk):
+    report = get_object_or_404(
+        IncidentReport.objects.select_related("category", "barangay"), pk=pk
+    )
+    if request.method == "POST":
+        form = EvidenceUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            for f in form.cleaned_data["files"]:
+                EvidenceFile.objects.create(
+                    report=report,
+                    file=f,
+                    original_name=f.name,
+                    uploaded_by=request.user,
+                )
+            messages.success(request, "Evidence uploaded successfully.")
+            return redirect("incidents:evidence", pk=report.pk)
+    else:
+        form = EvidenceUploadForm()
+
+    return render(
+        request,
+        "incidents/evidence_vault.html",
+        {"report": report, "form": form, "files": report.evidence_files.all()},
     )

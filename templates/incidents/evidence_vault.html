@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Evidence Vault</h1>
+    <p class="page-sub">
+      Incident #{{ report.pk }} · {{ report.category.category_name }}
+      · {{ report.barangay.name|default:"No barangay" }}
+    </p>
+  </div>
+  <a class="btn btn-secondary" href="{% url 'incidents:list' %}">Back to log</a>
+</div>
+
+<div class="card" style="margin-bottom: 22px;">
+  <h3>Upload evidence</h3>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="field">
+      <label for="{{ form.files.id_for_label }}">{{ form.files.label }}</label>
+      {{ form.files }}
+      {% for error in form.files.errors %}
+        <div class="err">{{ error }}</div>
+      {% endfor %}
+      <div class="coords">Images, PDF or Word files. Max 10 MB each. You can select several at once.</div>
+    </div>
+    <button type="submit" class="btn">Upload</button>
+  </form>
+</div>
+
+<div class="card">
+  <h3>Attached files ({{ files|length }})</h3>
+  {% if files %}
+  <table class="data">
+    <thead>
+      <tr><th>Preview</th><th>File</th><th>Uploaded</th><th>By</th></tr>
+    </thead>
+    <tbody>
+      {% for ev in files %}
+      <tr>
+        <td>
+          {% if ev.is_image %}
+            <img src="{{ ev.file.url }}" alt="" style="height: 48px; border-radius: 3px;">
+          {% else %}—{% endif %}
+        </td>
+        <td><a href="{{ ev.file.url }}" target="_blank">{{ ev.original_name|default:ev.file.name }}</a></td>
+        <td>{{ ev.uploaded_at|date:"M d, Y h:i A" }}</td>
+        <td>{{ ev.uploaded_by.username|default:"—" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="meta">No evidence attached yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
