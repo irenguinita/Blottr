@@ -13,6 +13,6 @@ def home_view(request):
         "open_count": IncidentReport.objects.filter(status="open").count(),
         "investigating_count": IncidentReport.objects.filter(status="under_investigation").count(),
         "total_count": IncidentReport.objects.count(),
-        "recent": IncidentReport.objects.select_related("category")[:5],
+        "recent": IncidentReport.objects.select_related("category", "barangay")[:5],
     }
-    return render(request, "home/home.html", context)
+    return render(request, "home/home.html", context)   
