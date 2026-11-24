@@ -246,3 +246,19 @@ table.data td { padding: 12px; border-bottom: 1px solid var(--border); color: va
   table.data th { background: #eee !important; color: #000 !important; }
   table.data td { color: #000; }
 }
+
+.report-map {
+  height: 340px;
+  width: 100%;
+  border: 1px solid #d0d5dd;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+@media print {
+  .report-map {
+    height: 300px !important;
+    break-inside: avoid;
+  }
+  .leaflet-control-container { display: none; }
+}

@@ -30,6 +30,7 @@
     {% if generated %}
       <button type="button" class="btn btn-secondary" onclick="window.print()">Print / Save as PDF</button>
     {% endif %}
+    <a href="{% url 'incidents:report_history' %}" class="btn btn-secondary">Report history</a>
   </form>
 </div>
 
@@ -92,6 +93,14 @@
     </div>
   </div>
 
+  <h3 style="margin-top: 24px;">Incident map</h3>
+  {% if points %}
+    <div id="report-map" class="report-map" style="height: 340px; width: 100%;"></div>
+    {{ points|json_script:"report-points" }}
+  {% else %}
+    <p class="meta">No incidents to plot for this period.</p>
+  {% endif %}
+
   <h3 style="margin-top: 24px;">Incident log</h3>
   <table class="data">
     <thead>
@@ -113,4 +122,31 @@
   </table>
 </div>
 {% endif %}
+
+{% if generated and points %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  (function () {
+    var points = JSON.parse(document.getElementById("report-points").textContent);
+    var map = L.map("report-map");
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    var bounds = [];
+    points.forEach(function (p) {
+      L.marker([p.lat, p.lng])
+        .addTo(map)
+        .bindPopup("<b>" + p.cat + "</b><br>" + p.barangay + "<br>" + p.when);
+      bounds.push([p.lat, p.lng]);
+    });
+
+    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 16 });
+    setTimeout(function () { map.invalidateSize(); }, 300);
+  })();
+</script>
+{% endif %}
+
 {% endblock %}
