@@ -1,13 +1,16 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, Subquery
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.db.models import Count, Subquery
 
 from .forms import EvidenceUploadForm, IncidentReportForm, ReportFilterForm
-from .models import EvidenceFile, IncidentCategory, IncidentReport
-
+from .models import (
+    EvidenceFile,
+    GeneratedReport,
+    IncidentCategory,
+    IncidentReport,
+)
 DEFAULT_CATEGORIES = [
     "Theft", "Robbery", "Assault", "Vandalism", "Traffic Accident",
     "Public Disturbance", "Domestic Dispute", "Missing Person", "Other",
@@ -123,19 +126,43 @@ def report_generator(request):
             .order_by("-total")
         )
 
+        ordered = incidents.order_by("-occurrence_timestamp")
+        total = ordered.count()
+
+        # Data for the Leaflet map (one marker per incident in this report)
+        points = [
+            {
+                "lat": r.latitude,
+                "lng": r.longitude,
+                "cat": r.category.category_name,
+                "barangay": r.barangay.name if r.barangay else "Unassigned",
+                "when": r.occurrence_timestamp.strftime("%b %d, %Y %I:%M %p"),
+            }
+            for r in ordered
+        ]
+
+        # Save a history row (matches the GENERATED_REPORTS table in the ERD)
+        GeneratedReport.objects.create(
+            generated_by=request.user,
+            barangay=barangay,
+            date_range_start=start,
+            date_range_end=end,
+        )
+
         context.update(
             {
                 "generated": True,
                 "start": start,
                 "end": end,
                 "barangay": barangay,
-                "incidents": incidents.order_by("-occurrence_timestamp"),
-                "total": incidents.count(),
+                "incidents": ordered,
+                "total": total,
                 "by_category": by_category,
                 "by_barangay": by_barangay,
                 "top_category": by_category[0] if by_category else None,
                 "top_barangay": by_barangay[0] if by_barangay else None,
                 "generated_at": timezone.now(),
+                "points": points,
             }
         )
 
@@ -156,3 +183,10 @@ def incidents_with_evidence(request):
         "sql": str(reports.query),   # shows the nested SELECT
     }
     return render(request, "incidents/incidents_with_evidence.html", context)
+
+@login_required(login_url="login:login")
+def report_history(request):
+    reports = GeneratedReport.objects.select_related(
+        "generated_by", "barangay"
+    )[:50]
+    return render(request, "incidents/report_history.html", {"reports": reports})

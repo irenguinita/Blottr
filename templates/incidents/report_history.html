@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Report History</h1>
+    <p class="page-sub">Every district summary report that has been generated.</p>
+  </div>
+</div>
+
+<div class="card">
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Generated</th>
+        <th>By</th>
+        <th>Period</th>
+        <th>Area</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for g in reports %}
+      <tr>
+        <td>{{ g.generated_at|date:"M d, Y h:i A" }}</td>
+        <td>{{ g.generated_by.username|default:"—" }}</td>
+        <td>{{ g.date_range_start|date:"M d, Y" }} to {{ g.date_range_end|date:"M d, Y" }}</td>
+        <td>{% if g.barangay %}{{ g.barangay.name }}{% else %}All barangays{% endif %}</td>
+        <td>
+          <a href="{% url 'incidents:report' %}?date_from={{ g.date_range_start|date:'Y-m-d' }}&date_to={{ g.date_range_end|date:'Y-m-d' }}{% if g.barangay %}&barangay={{ g.barangay.pk }}{% endif %}">Re-run</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">No reports generated yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

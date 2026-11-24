@@ -98,3 +98,29 @@ class EvidenceFile(models.Model):
     @property
     def is_image(self):
         return self.file.name.lower().endswith(self.IMAGE_EXTENSIONS)
+
+
+class GeneratedReport(models.Model):
+    generated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="generated_reports",
+    )
+    barangay = models.ForeignKey(
+        Barangay,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="generated_reports",
+    )  # null means "all barangays"
+    date_range_start = models.DateField()
+    date_range_end = models.DateField()
+    file_path = models.CharField(max_length=255, blank=True)
+    generated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-generated_at"]
+
+    def __str__(self):
+        return f"Report {self.date_range_start} to {self.date_range_end} ({self.generated_at:%Y-%m-%d %H:%M})"
