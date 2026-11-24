@@ -9,4 +9,5 @@ urlpatterns = [
     path("map/", views.incident_map, name="map"),
     path("<int:pk>/evidence/", views.evidence_vault, name="evidence"),
     path("report/", views.report_generator, name="report"),
+    path("with-evidence/", views.incidents_with_evidence, name="with_evidence"),
 ]

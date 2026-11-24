@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Incidents with Evidence</h1>
+    <p class="page-sub">Only incidents that have at least one uploaded evidence file.</p>
+  </div>
+  <a class="btn btn-secondary" href="{% url 'incidents:list' %}">Back to log</a>
+</div>
+
+<div class="card">
+  <table class="data">
+    <thead>
+      <tr><th>#</th><th>When</th><th>Status</th><th>Evidence</th></tr>
+    </thead>
+    <tbody>
+      {% for r in reports %}
+      <tr>
+        <td>{{ r.pk }}</td>
+        <td>{{ r.occurrence_timestamp|date:"M d, Y h:i A" }}</td>
+        <td>{{ r.status }}</td>
+        <td><a href="{% url 'incidents:evidence' r.pk %}">{{ r.evidence_files.count }} file(s)</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No incidents have evidence yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card" style="margin-top: 22px;">
+  <h3>Generated SQL (SUBQUERY)</h3>
+  <pre style="white-space: pre-wrap; font-size: 12px; margin: 0;">{{ sql }}</pre>
+</div>
+{% endblock %}

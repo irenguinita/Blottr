@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.db.models import Count, Subquery
 
 from .forms import EvidenceUploadForm, IncidentReportForm, ReportFilterForm
 from .models import EvidenceFile, IncidentCategory, IncidentReport
@@ -40,7 +41,11 @@ def incident_create(request):
 @login_required(login_url="login:login")
 def incident_list(request):
     reports = IncidentReport.objects.select_related("category", "barangay", "user")[:50]
-    return render(request, "incidents/incident_list.html", {"reports": reports})
+    context = {
+        "reports": reports,
+        "sql": str(reports.query),    
+    }
+    return render(request, "incidents/incident_list.html", context)
 
 
 @login_required(login_url="login:login")
@@ -135,3 +140,19 @@ def report_generator(request):
         )
 
     return render(request, "incidents/report.html", context)
+
+@login_required(login_url="login:login")
+def incidents_with_evidence(request):
+    # INNER query: IDs of incidents that have at least one evidence file
+    report_ids_with_files = EvidenceFile.objects.values("report_id")
+
+    # OUTER query: only incidents whose id appears in the inner query
+    reports = IncidentReport.objects.filter(
+        id__in=Subquery(report_ids_with_files)
+    ).order_by("-occurrence_timestamp")
+
+    context = {
+        "reports": reports,
+        "sql": str(reports.query),   # shows the nested SELECT
+    }
+    return render(request, "incidents/incidents_with_evidence.html", context)
